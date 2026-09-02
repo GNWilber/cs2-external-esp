@@ -491,11 +491,6 @@ void Overlays::RenderRadar() {
         6.f
     );
 
-    d->AddCircle(ImVec2(cx, cy), radius * 0.333f, IM_COL32(50, 50, 50, 120));
-    d->AddCircle(ImVec2(cx, cy), radius * 0.666f, IM_COL32(50, 50, 50, 120));
-    d->AddLine(ImVec2(pos.x + 4.f, cy), ImVec2(pos.x + size.x - 4.f, cy), IM_COL32(50, 50, 50, 120));
-    d->AddLine(ImVec2(cx, pos.y + 4.f), ImVec2(cx, pos.y + size.y - 4.f), IM_COL32(50, 50, 50, 120));
-
     for (auto& player : players) {
         if (!player.alive)
             continue;
@@ -540,8 +535,6 @@ void Overlays::RenderRadar() {
 
     d->AddCircleFilled(ImVec2(cx, cy), 5.f, IM_COL32(100, 180, 255, 255));
     d->AddCircle(ImVec2(cx, cy), 5.f, IM_COL32(0, 0, 0, 180));
-
-    d->AddText(ImVec2(pos.x + 6.f, pos.y + 4.f), IM_COL32(180, 180, 180, 200), "Radar");
 }
 
 void Overlays::RenderBomb() {

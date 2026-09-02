@@ -101,16 +101,25 @@ void Renderer::Render() {
 bool Renderer::HandleState() {
     isRunning = Window::shouldRun; // From the window event handler
 
-    static bool was_holding = false;
+    static bool was_holding_menu = false;
+    static bool was_holding_enabled = false;
 
-    bool pressed_insert = (GetAsyncKeyState(VK_INSERT) & 0x8000);
-    bool pressed_rshift = (GetAsyncKeyState(VK_RSHIFT) & 0x8000);
+    bool pressed_menu = (GetAsyncKeyState(VK_OEM_6) & 0x8000); // "]" key
 
     bool pressed_end = (GetAsyncKeyState(VK_END) & 0x8000);
 
-    bool should_toggle = !was_holding && (pressed_insert || pressed_rshift);
+    bool pressed_lalt = (GetAsyncKeyState(VK_LMENU) & 0x8000);
 
-    if (should_toggle || pressed_end) { // Toggle when pressing end to trigger the config save :v
+    bool should_toggle_menu = !was_holding_menu && pressed_menu;
+    bool should_toggle_enabled = !was_holding_enabled && pressed_lalt;
+
+    if (should_toggle_enabled) {
+        cfg::enabled = !cfg::enabled;
+        LOGF(VERBOSE, "Captured global VK_LMENU, toggling enabled state to {}", cfg::enabled);
+        std::thread(Config::Write).detach();
+    }
+
+    if (should_toggle_menu || pressed_end) {
         this->isOpen = !isOpen;
 
         // Release cursor when opening the menu
@@ -121,7 +130,7 @@ bool Renderer::HandleState() {
             SetForegroundWindow(Engine::GetProcess()->hwnd_);
 
         Window::SetClickthrough(Window::hwnd, !this->isOpen);
-        LOGF(VERBOSE, "Captured global VK_INSERT or VK_RSHIFT, toggling menu state to {}", this->isOpen);
+        LOGF(VERBOSE, "Captured global VK_OEM_6, toggling menu state to {}", this->isOpen);
 
         // Not the best way, but wont bother the user
         // As far as i know, no one has complained about the config saving system :D
@@ -131,8 +140,10 @@ bool Renderer::HandleState() {
     if (pressed_end)
         this->isRunning = false;
 
-    was_holding = pressed_insert || pressed_rshift;
-    return should_toggle;
+    was_holding_menu = pressed_menu;
+    was_holding_enabled = pressed_lalt;
+
+    return should_toggle_menu || should_toggle_enabled;
 }
 
 bool Renderer::HandleWindowOrder() {
