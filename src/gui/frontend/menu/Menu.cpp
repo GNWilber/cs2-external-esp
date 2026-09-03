@@ -287,7 +287,7 @@ void Menu::RenderImpl() {
 					ImGui::BeginDisabled(!cfg::world::radar::enabled);
 					{
 						ImGui::SameLine();
-						ImGui::SliderFloat("Range", &cfg::world::radar::range, 100.f, 8000.f, "%.0f u");
+						ImGui::SliderFloat("Range", &cfg::world::radar::range, 1000.f, 3500.f, "%.0f u");
 						ImGui::Checkbox("Disable Rotation", &cfg::world::radar::no_rotate);
 					}
 					ImGui::EndDisabled();
